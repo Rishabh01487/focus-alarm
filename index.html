@@ -26,7 +26,7 @@
         /* Alarm Active State */
         body.alarm-active {
             background: linear-gradient(135deg, #fff0f0 0%, #ffe8e8 100%);
-            animation: gentle-pulse 2s infinite;
+            animation: gentle-pulse 1s infinite;
         }
         
         @keyframes gentle-pulse {
@@ -104,7 +104,7 @@
         
         .alarm-indicator.ringing {
             background: #ff6b6b;
-            animation: soft-pulse 1s infinite;
+            animation: soft-pulse 0.5s infinite;
             box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
         }
         
@@ -243,6 +243,20 @@
             gap: 20px;
         }
         
+        /* Early Warning Option */
+        .early-warning {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .early-warning input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
         /* Personalized Voice Section */
         .voice-personalization {
             background: #f0f8ff;
@@ -311,66 +325,6 @@
         .message-option .icon {
             font-size: 2rem;
             margin-bottom: 10px;
-            display: block;
-        }
-        
-        /* Voice Recording */
-        .voice-recording {
-            background: white;
-            padding: 25px;
-            border-radius: 16px;
-            margin: 20px 0;
-            border: 2px solid #e3f2fd;
-            text-align: center;
-        }
-        
-        .recording-status {
-            color: #4682b4;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        
-        .recording-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        /* Music Upload */
-        .music-upload {
-            background: #f8fdff;
-            border: 2px dashed #a0b9c8;
-            border-radius: 16px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 20px 0;
-        }
-        
-        .music-upload:hover {
-            border-color: #63b3ed;
-            background: #e3f2fd;
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            color: #63b3ed;
-            margin-bottom: 15px;
-        }
-        
-        .selected-music {
-            background: #e8f4f8;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            display: none;
-            border: 2px solid #63b3ed;
-        }
-        
-        .selected-music.visible {
             display: block;
         }
         
@@ -458,7 +412,7 @@
         .goal-card.ringing {
             border-left-color: #ff6b6b;
             background: #fff0f0;
-            animation: gentle-alert 2s infinite;
+            animation: gentle-alert 0.5s infinite;
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.15);
         }
         
@@ -661,10 +615,6 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .recording-controls {
-                flex-direction: column;
-            }
-            
             .emergency-stop {
                 top: 10px;
                 right: 10px;
@@ -687,14 +637,14 @@
                 <span style="color: #63b3ed;">⏰</span> Personal Focus Alarm
             </h1>
             <p class="subtitle">
-                Your personal assistant that calls you by name when it's time to work
+                Beeps EXACTLY on time with continuous alerts until you start
             </p>
             
             <div class="alarm-status">
                 <div id="alarmIndicator" class="alarm-indicator"></div>
                 <div class="status-text">
                     <strong id="statusText">System Ready</strong>
-                    <span id="alarmCount">No active alarms</span>
+                    <span id="alarmCount">Next check in 30s</span>
                 </div>
             </div>
         </header>
@@ -745,6 +695,16 @@
                             <label for="startTime" style="font-size: 0.9rem;">Start Time</label>
                             <input type="time" id="startTime" required>
                         </div>
+                    </div>
+                    
+                    <!-- Early Warning Option -->
+                    <div class="early-warning">
+                        <input type="checkbox" id="earlyWarning" checked>
+                        <label for="earlyWarning" style="margin-bottom: 0; font-size: 0.9rem;">
+                            Early warning (beep
+                            <input type="number" id="warningMinutes" min="0" max="60" value="2" style="width: 50px;">
+                            minutes before)
+                        </label>
                     </div>
                 </div>
                 
@@ -807,14 +767,15 @@
                 
                 <!-- Alternative Alarm Sounds -->
                 <div class="form-group">
-                    <label for="soundType">Alternative Alarm Sound</label>
+                    <label for="soundType">Alarm Sound</label>
                     <select id="soundType">
                         <option value="voice">Personalized Voice Message</option>
+                        <option value="beep">Continuous Beep</option>
                         <option value="gentle">Gentle Bell</option>
                         <option value="digital">Digital Beep</option>
                         <option value="nature">Nature Sounds</option>
-                        <option value="music">Custom Music</option>
                     </select>
+                    <span class="label-hint">For "Continuous until stopped" mode, alarm will repeat every 2 seconds</span>
                 </div>
                 
                 <button type="submit" class="btn-primary">
@@ -866,8 +827,8 @@
                 <div style="display: flex; align-items: flex-start; gap: 15px;">
                     <div style="background: #4682b4; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
                     <div>
-                        <strong style="color: #4682b4;">Get personal reminders</strong>
-                        <p style="color: #7f8c8d; margin-top: 5px;">At scheduled time, alarm will say: "Wake up, [Your Name]! It's time for work!"</p>
+                        <strong style="color: #4682b4;">Get precise reminders</strong>
+                        <p style="color: #7f8c8d; margin-top: 5px;">Alarm beeps EXACTLY at set time (or 2 min before) and continues every 2 seconds.</p>
                     </div>
                 </div>
                 
@@ -875,7 +836,7 @@
                     <div style="background: #4682b4; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">4</div>
                     <div>
                         <strong style="color: #4682b4;">Start when ready</strong>
-                        <p style="color: #7f8c8d; margin-top: 5px;">Click "Start Now" when you begin working. Alarm stops automatically.</p>
+                        <p style="color: #7f8c8d; margin-top: 5px;">Click "Start Now" to begin working. Alarm stops immediately.</p>
                     </div>
                 </div>
             </div>
@@ -883,9 +844,9 @@
         
         <!-- Footer -->
         <div class="footer">
-            <p>Personal Focus Alarm © 2024 | Your personal productivity assistant</p>
+            <p>Personal Focus Alarm © 2024 | Beeps precisely on time</p>
             <p style="margin-top: 10px; font-size: 0.85rem;">
-                <span id="pwaStatus">Add to Home Screen for voice alarm features</span>
+                <span id="pwaStatus">High-precision timing with Web Audio API</span>
             </p>
         </div>
     </div>
@@ -900,10 +861,6 @@
         <div class="notification-message" id="notificationMessage"></div>
     </div>
 
-    <!-- Hidden Audio Elements -->
-    <audio id="voiceAlarm" style="display: none;"></audio>
-    <audio id="backgroundMusic" style="display: none;"></audio>
-
     <script>
         // ====================
         // APP STATE
@@ -913,6 +870,9 @@
         let selectedMessageType = 'wakeup';
         let userName = 'Alex';
         let isVoicePlaying = false;
+        let alarmAudioContext = null;
+        let alarmOscillator = null;
+        let continuousBeepInterval = null;
         
         // Voice messages templates
         const voiceMessages = {
@@ -972,8 +932,8 @@
             // Load saved goals
             loadGoals();
             
-            // Setup alarm checking
-            startAlarmChecker();
+            // Setup alarm checking with high precision
+            startPreciseAlarmChecker();
             
             // Initial render
             renderGoals();
@@ -982,7 +942,7 @@
             // Show welcome message
             setTimeout(() => {
                 showNotification("Welcome!", 
-                    "Hello " + userName + "! 👋 Set your first goal and the alarm will call you by name when it's time to work.");
+                    "Hello " + userName + "! 👋 Alarms now beep EXACTLY on time and continuously every 2 seconds.");
             }, 1000);
             
             // Request notification permission
@@ -991,20 +951,75 @@
                     Notification.requestPermission();
                 }, 2000);
             }
+            
+            // Initialize audio context
+            initAudioContext();
+        }
+        
+        function initAudioContext() {
+            try {
+                alarmAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log("Audio context initialized for precise timing");
+            } catch (e) {
+                console.log("Web Audio API not supported:", e);
+            }
         }
         
         // ====================
-        // VOICE ALARM SYSTEM
+        // PRECISE ALARM SYSTEM
         // ====================
         
-        function startAlarmChecker() {
-            // Check every 30 seconds for alarms
-            setInterval(checkAllAlarms, 30000);
+        function startPreciseAlarmChecker() {
+            // High-precision checking every second
+            setInterval(checkAllAlarms, 1000);
             
-            // Update stats every minute
-            setInterval(updateStats, 60000);
+            // Update UI every 30 seconds
+            setInterval(updateTimeDisplay, 30000);
             
-            console.log("Personal alarm system started");
+            console.log("Precise alarm system started (1-second precision)");
+        }
+        
+        function updateTimeDisplay() {
+            const now = new Date();
+            const nextMinute = 60 - now.getSeconds();
+            document.getElementById('alarmCount').textContent = 
+                `Next check: ${nextMinute}s | ${getNextAlarmTime()}`;
+        }
+        
+        function getNextAlarmTime() {
+            const pendingGoals = goals.filter(g => g.status === 'pending');
+            if (pendingGoals.length === 0) return "No pending alarms";
+            
+            const now = new Date();
+            let nearestTime = Infinity;
+            let nearestGoal = null;
+            
+            pendingGoals.forEach(goal => {
+                const goalDateTime = new Date(goal.date + 'T' + goal.startTime);
+                if (goal.earlyWarning) {
+                    goalDateTime.setMinutes(goalDateTime.getMinutes() - goal.warningMinutes);
+                }
+                
+                if (goalDateTime > now && goalDateTime.getTime() < nearestTime) {
+                    nearestTime = goalDateTime.getTime();
+                    nearestGoal = goal;
+                }
+            });
+            
+            if (nearestGoal) {
+                const goalDateTime = new Date(nearestGoal.date + 'T' + nearestGoal.startTime);
+                const timeDiff = goalDateTime - now;
+                const minutes = Math.floor(timeDiff / 60000);
+                const seconds = Math.floor((timeDiff % 60000) / 1000);
+                
+                if (minutes > 0) {
+                    return `Next alarm in ${minutes}m ${seconds}s`;
+                } else {
+                    return `Next alarm in ${seconds}s`;
+                }
+            }
+            
+            return "Checking...";
         }
         
         function checkAllAlarms() {
@@ -1013,16 +1028,34 @@
             
             goals.forEach(goal => {
                 // Check if alarm should start
-                if (goal.status === 'pending') {
+                if (goal.status === 'pending' || goal.status === 'overdue') {
                     const goalDateTime = new Date(goal.date + 'T' + goal.startTime);
+                    const warningTime = new Date(goalDateTime);
                     
-                    if (now >= goalDateTime) {
-                        // Time to start alarm!
-                        if (!activeAlarms.has(goal.id)) {
-                            startPersonalAlarm(goal);
+                    // Check for early warning
+                    if (goal.earlyWarning && goal.warningMinutes > 0) {
+                        warningTime.setMinutes(warningTime.getMinutes() - goal.warningMinutes);
+                    }
+                    
+                    // Check if it's time for early warning
+                    if (goal.earlyWarning && goal.warningMinutes > 0 && now >= warningTime && now < goalDateTime) {
+                        if (!goal.earlyWarningTriggered) {
+                            triggerEarlyWarning(goal);
+                            goal.earlyWarningTriggered = true;
+                            saveGoals();
                         }
-                        goal.status = 'overdue';
-                        saveGoals();
+                    }
+                    
+                    // Check if it's exactly the alarm time
+                    if (now >= goalDateTime) {
+                        // Time to start continuous alarm!
+                        if (!activeAlarms.has(goal.id)) {
+                            startContinuousAlarm(goal);
+                        }
+                        if (goal.status !== 'overdue') {
+                            goal.status = 'overdue';
+                            saveGoals();
+                        }
                     }
                 }
                 
@@ -1033,72 +1066,252 @@
             });
             
             updateAlarmStatus(ringingCount);
-            renderGoals();
+            if (ringingCount > 0) {
+                renderGoals();
+            }
         }
         
-        function startPersonalAlarm(goal) {
-            console.log(`🎤 Starting personal alarm for: ${goal.title}`);
+        function triggerEarlyWarning(goal) {
+            console.log(`🔔 Early warning for: ${goal.title}`);
+            
+            // Play single beep for early warning
+            playBeepSound('warning');
+            
+            // Show notification
+            const warningMins = goal.warningMinutes || 2;
+            showNotification("⏰ Coming Soon!", 
+                `"${goal.title}" starts in ${warningMins} minute${warningMins === 1 ? '' : 's'}!\n` +
+                `Get ready to start working, ${userName}!`,
+                false);
+        }
+        
+        function startContinuousAlarm(goal) {
+            console.log(`🔊 Starting CONTINUOUS alarm for: ${goal.title}`);
             
             // Clear any existing alarm for this goal
             if (activeAlarms.has(goal.id)) {
-                clearInterval(activeAlarms.get(goal.id));
+                clearInterval(activeAlarms.get(goal.id).interval);
+                activeAlarms.delete(goal.id);
             }
             
-            // Determine alarm duration
-            let duration;
-            switch(goal.duration || 'until_start') {
-                case '5min': duration = 5 * 60 * 1000; break;
-                case '10min': duration = 10 * 60 * 1000; break;
-                case '15min': duration = 15 * 60 * 1000; break;
-                default: duration = null; // Until stopped
-            }
+            // Mark as ringing
+            goal.isRinging = true;
+            goal.alarmStartedAt = new Date().toISOString();
+            saveGoals();
             
             // Play first alarm immediately
-            playPersonalVoiceAlarm(goal);
+            playAlarmSound(goal);
             
-            // Start alarm interval (every 45 seconds)
+            // Start continuous alarm interval (every 2 seconds for true continuity)
             const alarmInterval = setInterval(() => {
-                playPersonalVoiceAlarm(goal);
-                
-                // Show notification
-                const overdueTime = Math.floor((Date.now() - new Date(goal.date + 'T' + goal.startTime).getTime()) / 60000);
-                showNotification("⏰ Time to Work!", 
-                    `Hey ${userName}! "${goal.title}" is ${overdueTime} minute${overdueTime === 1 ? '' : 's'} overdue!\n` +
-                    `Click START NOW to begin working.`,
-                    true);
-                
-            }, 45000); // Repeat every 45 seconds
+                playAlarmSound(goal);
+            }, 2000); // Repeat every 2 seconds
             
             // Store interval
             activeAlarms.set(goal.id, {
                 interval: alarmInterval,
                 audio: null,
-                duration: duration
+                duration: goal.duration || 'until_start',
+                startTime: Date.now()
             });
-            
-            // Mark as ringing
-            goal.isRinging = true;
-            saveGoals();
             
             // Update UI
             document.body.classList.add('alarm-active');
             document.getElementById('emergencyStopBtn').classList.add('visible');
             
             // Show urgent notification
-            showNotification("🎤 Personal Alarm Started!", 
-                `"${goal.title}"\n\nHey ${userName}! It's time to work!\n` +
-                `The alarm will call you by name every 45 seconds until you start.`,
+            const overdueTime = Math.floor((Date.now() - new Date(goal.date + 'T' + goal.startTime).getTime()) / 1000);
+            showNotification("🔊 ALARM ACTIVE!", 
+                `"${goal.title}" is NOW!\n\n` +
+                `Hey ${userName}! It's time to work!\n` +
+                `Alarm will beep continuously every 2 seconds until you start.`,
                 true);
             
-            // Set timeout to stop alarm if duration is specified
-            if (duration) {
+            // Set timeout to stop alarm if duration is specified (not 'until_start' or 'continuous')
+            if (goal.duration && goal.duration !== 'until_start' && goal.duration !== 'continuous') {
+                let durationMs = 0;
+                switch(goal.duration) {
+                    case '5min': durationMs = 5 * 60 * 1000; break;
+                    case '10min': durationMs = 10 * 60 * 1000; break;
+                    case '15min': durationMs = 15 * 60 * 1000; break;
+                }
+                
                 setTimeout(() => {
                     if (activeAlarms.has(goal.id)) {
                         stopAlarmForGoal(goal.id);
                         showNotification("Alarm Completed", 
-                            `${userName}, the alarm has stopped. Please remember to start your task!`);
+                            `${userName}, the alarm has stopped after ${goal.duration}.`);
                     }
-                }, duration);
+                }, durationMs);
+            }
+        }
+        
+        function playAlarmSound(goal) {
+            const soundType = goal.soundType || 'voice';
+            
+            switch(soundType) {
+                case 'voice':
+                    playPersonalVoiceAlarm(goal);
+                    break;
+                case 'beep':
+                    playContinuousBeep();
+                    break;
+                case 'gentle':
+                    playGentleBell();
+                    break;
+                case 'digital':
+                    playDigitalBeep();
+                    break;
+                case 'nature':
+                    playNatureSound();
+                    break;
+            }
+            
+            // Vibrate if on mobile
+            if ('vibrate' in navigator) {
+                navigator.vibrate(200); // Vibrate for 200ms
+            }
+        }
+        
+        function playContinuousBeep() {
+            if (!alarmAudioContext) return;
+            
+            try {
+                const oscillator = alarmAudioContext.createOscillator();
+                const gainNode = alarmAudioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(alarmAudioContext.destination);
+                
+                // Short, sharp beep
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                // Quick attack, quick release
+                const now = alarmAudioContext.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+                
+            } catch (e) {
+                console.log('Beep error:', e);
+            }
+        }
+        
+        function playBeepSound(type = 'warning') {
+            if (!alarmAudioContext) return;
+            
+            try {
+                const oscillator = alarmAudioContext.createOscillator();
+                const gainNode = alarmAudioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(alarmAudioContext.destination);
+                
+                if (type === 'warning') {
+                    // Gentle warning beep
+                    oscillator.frequency.value = 600;
+                    oscillator.type = 'sine';
+                    
+                    const now = alarmAudioContext.currentTime;
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.2, now + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                    
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.5);
+                } else {
+                    // Standard beep
+                    playContinuousBeep();
+                }
+                
+            } catch (e) {
+                console.log('Beep error:', e);
+            }
+        }
+        
+        function playGentleBell() {
+            if (!alarmAudioContext) return;
+            
+            try {
+                const oscillator = alarmAudioContext.createOscillator();
+                const gainNode = alarmAudioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(alarmAudioContext.destination);
+                
+                oscillator.frequency.value = 523.25; // C5
+                oscillator.type = 'sine';
+                
+                const now = alarmAudioContext.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 1.5);
+                
+            } catch (e) {
+                console.log('Bell error:', e);
+            }
+        }
+        
+        function playDigitalBeep() {
+            if (!alarmAudioContext) return;
+            
+            try {
+                const oscillator = alarmAudioContext.createOscillator();
+                const gainNode = alarmAudioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(alarmAudioContext.destination);
+                
+                oscillator.frequency.value = 1000;
+                oscillator.type = 'square';
+                
+                const now = alarmAudioContext.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.15);
+                gainNode.gain.linearRampToValueAtTime(0.3, now + 0.2);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+                
+            } catch (e) {
+                console.log('Digital beep error:', e);
+            }
+        }
+        
+        function playNatureSound() {
+            if (!alarmAudioContext) return;
+            
+            try {
+                const oscillator = alarmAudioContext.createOscillator();
+                const gainNode = alarmAudioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(alarmAudioContext.destination);
+                
+                // Bird chirp
+                oscillator.frequency.setValueAtTime(2000, alarmAudioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1500, alarmAudioContext.currentTime + 0.3);
+                oscillator.type = 'sine';
+                
+                const now = alarmAudioContext.currentTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                
+                oscillator.start(now);
+                oscillator.stop(now + 0.3);
+                
+            } catch (e) {
+                console.log('Nature sound error:', e);
             }
         }
         
@@ -1144,121 +1357,25 @@
                 // When speech ends
                 utterance.onend = function() {
                     isVoicePlaying = false;
-                    
-                    // If this is for a specific goal, play alternative sound
-                    if (goal && goal.soundType && goal.soundType !== 'voice') {
-                        playAlternativeSound(goal.soundType);
-                    }
+                };
+                
+                utterance.onerror = function() {
+                    isVoicePlaying = false;
+                    // Fallback to beep if voice fails
+                    playContinuousBeep();
                 };
                 
             } else {
-                // Fallback to text-to-speech using Web Audio API
-                playTextToSpeechFallback(messageText);
+                // Fallback to beep
+                playContinuousBeep();
                 isVoicePlaying = false;
-            }
-            
-            // Vibrate if on mobile
-            if ('vibrate' in navigator) {
-                navigator.vibrate([200, 100, 200, 100, 200]);
-            }
-        }
-        
-        function playTextToSpeechFallback(text) {
-            // Simple beep pattern for fallback
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Create a beep pattern
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
-                
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.3);
-                
-                // Second beep
-                setTimeout(() => {
-                    const oscillator2 = audioContext.createOscillator();
-                    const gainNode2 = audioContext.createGain();
-                    
-                    oscillator2.connect(gainNode2);
-                    gainNode2.connect(audioContext.destination);
-                    
-                    oscillator2.frequency.value = 600;
-                    oscillator2.type = 'sine';
-                    
-                    gainNode2.gain.setValueAtTime(0, audioContext.currentTime);
-                    gainNode2.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
-                    gainNode2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-                    
-                    oscillator2.start();
-                    oscillator2.stop(audioContext.currentTime + 0.5);
-                }, 400);
-                
-            } catch (e) {
-                console.log('Audio error:', e);
-            }
-        }
-        
-        function playAlternativeSound(soundType) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                switch(soundType) {
-                    case 'gentle':
-                        oscillator.frequency.value = 523.25; // C5
-                        oscillator.type = 'sine';
-                        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.1);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2);
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 2);
-                        break;
-                        
-                    case 'digital':
-                        oscillator.frequency.value = 1000;
-                        oscillator.type = 'square';
-                        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.05);
-                        gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.15);
-                        gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.2);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        break;
-                        
-                    case 'nature':
-                        // Bird chirp sound
-                        oscillator.frequency.value = 2000;
-                        oscillator.type = 'sine';
-                        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                        gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.05);
-                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        break;
-                }
-            } catch (e) {
-                console.log('Alternative sound error:', e);
             }
         }
         
         function stopAlarmForGoal(goalId) {
             if (activeAlarms.has(goalId)) {
-                clearInterval(activeAlarms.get(goalId).interval);
+                const alarmData = activeAlarms.get(goalId);
+                clearInterval(alarmData.interval);
                 activeAlarms.delete(goalId);
                 
                 // Stop any speech
@@ -1266,9 +1383,16 @@
                     window.speechSynthesis.cancel();
                 }
                 
+                // Stop any audio
+                if (alarmOscillator) {
+                    alarmOscillator.stop();
+                    alarmOscillator = null;
+                }
+                
                 const goal = goals.find(g => g.id === goalId);
                 if (goal) {
                     goal.isRinging = false;
+                    goal.earlyWarningTriggered = false;
                     saveGoals();
                 }
                 
@@ -1297,6 +1421,7 @@
                 const goal = goals.find(g => g.id === goalId);
                 if (goal) {
                     goal.isRinging = false;
+                    goal.earlyWarningTriggered = false;
                 }
             });
             
@@ -1306,6 +1431,12 @@
             // Stop speech synthesis
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
+            }
+            
+            // Stop any audio
+            if (alarmOscillator) {
+                alarmOscillator.stop();
+                alarmOscillator = null;
             }
             
             // Reset UI
@@ -1336,9 +1467,6 @@
             
             // Update preview
             updateVoicePreview();
-            
-            // Test the voice
-            testVoiceAlarm();
         }
         
         function getMessageIndex(type) {
@@ -1387,6 +1515,8 @@
             const startTime = document.getElementById('startTime').value;
             const duration = document.getElementById('alarmDuration').value;
             const soundType = document.getElementById('soundType').value;
+            const earlyWarning = document.getElementById('earlyWarning').checked;
+            const warningMinutes = parseInt(document.getElementById('warningMinutes').value) || 2;
             
             // Validation
             if (!title || !date || !startTime) {
@@ -1402,7 +1532,7 @@
             
             // Create goal
             const goal = {
-                id: Date.now(),
+                id: Date.now() + Math.random(), // More unique ID
                 title,
                 description,
                 date,
@@ -1411,9 +1541,12 @@
                 soundType,
                 messageType: selectedMessageType,
                 userName: userName,
+                earlyWarning: earlyWarning,
+                warningMinutes: warningMinutes,
                 status: 'pending',
                 createdAt: new Date().toISOString(),
-                isRinging: false
+                isRinging: false,
+                earlyWarningTriggered: false
             };
             
             goals.push(goal);
@@ -1435,19 +1568,16 @@
                 day: 'numeric'
             });
             
-            let soundInfo = '';
-            if (soundType === 'voice') {
-                const message = voiceMessages[selectedMessageType];
-                soundInfo = `🎤 "${message.text.replace('{name}', userName)}"`;
-            } else {
-                soundInfo = `🔔 ${soundType.charAt(0).toUpperCase() + soundType.slice(1)} sound`;
+            let timeInfo = formatTime(startTime);
+            if (earlyWarning) {
+                timeInfo += ` (with ${warningMinutes}-minute early warning)`;
             }
             
             showNotification("✅ Alarm Set Successfully!", 
-                `"${title}"\n📅 ${formattedDate} at ${formatTime(startTime)}\n` +
-                `👤 Personal alarm for: ${userName}\n` +
-                `${soundInfo}\n\n` +
-                `The alarm will call you by name when it's time to work!`);
+                `"${title}"\n📅 ${formattedDate} at ${timeInfo}\n` +
+                `🔊 Alarm: ${soundType === 'voice' ? 'Personalized voice' : soundType}\n` +
+                `⏰ Will beep continuously every 2 seconds until you start!\n\n` +
+                `Get ready to work, ${userName}!`);
         }
         
         function startGoal(goalId) {
@@ -1521,14 +1651,14 @@
                 indicator.classList.add('ringing');
                 statusText.textContent = `${ringingCount} Alarm${ringingCount === 1 ? '' : 's'} Active`;
                 statusText.style.color = '#ff6b6b';
-                alarmCount.textContent = `Calling ${userName} to work!`;
+                alarmCount.textContent = `Continuous beeping every 2 seconds!`;
                 alarmCount.style.color = '#ff6b6b';
                 document.getElementById('ringingAlarms').textContent = ringingCount;
             } else {
                 indicator.classList.remove('ringing');
                 statusText.textContent = 'System Ready';
                 statusText.style.color = '#4682b4';
-                alarmCount.textContent = 'No active alarms';
+                alarmCount.textContent = getNextAlarmTime();
                 alarmCount.style.color = '#7f8c8d';
                 document.getElementById('ringingAlarms').textContent = '0';
             }
@@ -1577,11 +1707,28 @@
                 if (goal.status === 'pending') {
                     const timeDiff = goalDateTime - now;
                     if (timeDiff > 0) {
-                        const hours = Math.floor(timeDiff / 3600000);
-                        const minutes = Math.floor((timeDiff % 3600000) / 60000);
-                        timeInfo = `⏳ Starts in ${hours}h ${minutes}m`;
+                        const minutes = Math.floor(timeDiff / 60000);
+                        const seconds = Math.floor((timeDiff % 60000) / 1000);
+                        
+                        if (minutes > 0) {
+                            timeInfo = `⏳ Starts in ${minutes}m ${seconds}s`;
+                        } else {
+                            timeInfo = `⏳ Starts in ${seconds}s`;
+                        }
+                        
+                        if (goal.earlyWarning && goal.warningMinutes > 0 && minutes <= goal.warningMinutes) {
+                            timeInfo += ` (⚠️ ${goal.warningMinutes}-min warning active)`;
+                        }
                     }
                 }
+                
+                // Get sound icon
+                let soundIcon = '🔊';
+                if (goal.soundType === 'voice') soundIcon = '🎤';
+                else if (goal.soundType === 'beep') soundIcon = '🔔';
+                else if (goal.soundType === 'gentle') soundIcon = '🔔';
+                else if (goal.soundType === 'digital') soundIcon = '📟';
+                else if (goal.soundType === 'nature') soundIcon = '🌿';
                 
                 return `
                     <div class="goal-card ${goal.isRinging ? 'ringing' : ''}" data-id="${goal.id}">
@@ -1590,10 +1737,11 @@
                                 <div class="goal-title">${goal.title}</div>
                                 <div class="goal-date">
                                     📅 ${date} ${isToday ? '• Today' : ''} • ${start}
+                                    ${goal.earlyWarning ? `• ⏰ ${goal.warningMinutes || 2}-min warning` : ''}
                                 </div>
                             </div>
                             <div class="goal-time">
-                                ${goal.soundType === 'voice' ? '🎤' : '🔔'} ${goal.duration}
+                                ${soundIcon} ${goal.duration === 'continuous' ? 'Continuous' : goal.duration}
                             </div>
                         </div>
                         
@@ -1602,7 +1750,9 @@
                         ` : ''}
                         
                         <div class="goal-status ${goal.isRinging ? 'ringing' : ''}">
-                            ${goal.status.toUpperCase()} ${goal.isRinging ? '• CALLING ' + goal.userName.toUpperCase() + '!' : ''}
+                            ${goal.status.toUpperCase()} 
+                            ${goal.isRinging ? '• 🔊 BEEPING CONTINUOUSLY!' : ''}
+                            ${goal.earlyWarningTriggered && !goal.isRinging ? '• ⚠️ Early warning sent' : ''}
                         </div>
                         
                         ${timeInfo ? `
@@ -1613,9 +1763,10 @@
                         
                         ${goal.isRinging ? `
                             <div style="background: #ffebee; padding: 15px; border-radius: 12px; margin: 15px 0; color: #ff6b6b; border: 2px solid #ffcdd2;">
-                                <strong>🎤 PERSONAL ALARM ACTIVE!</strong>
+                                <strong>🔊 CONTINUOUS ALARM ACTIVE!</strong>
                                 <p style="margin-top: 8px; font-size: 0.95rem;">
-                                    The alarm is calling ${goal.userName} every 45 seconds to start working!
+                                    Beeping every 2 seconds to get ${goal.userName}'s attention!
+                                    Started ${formatDuration(Date.now() - new Date(goal.alarmStartedAt).getTime())} ago.
                                 </p>
                             </div>
                         ` : ''}
@@ -1640,6 +1791,13 @@
                     </div>
                 `;
             }).join('');
+        }
+        
+        function formatDuration(ms) {
+            const seconds = Math.floor(ms / 1000);
+            if (seconds < 60) return `${seconds} second${seconds === 1 ? '' : 's'}`;
+            const minutes = Math.floor(seconds / 60);
+            return `${minutes} minute${minutes === 1 ? '' : 's'}`;
         }
         
         function updateStats() {
@@ -1679,7 +1837,7 @@
             
             if (urgent) {
                 notification.style.borderColor = '#ff6b6b';
-                icon.textContent = '🎤';
+                icon.textContent = '🔊';
             } else {
                 notification.style.borderColor = '#63b3ed';
                 icon.textContent = '🔔';
