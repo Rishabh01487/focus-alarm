@@ -1,16 +1,21 @@
 {
   "name": "Personal Focus Alarm",
-  "short_name": "FocusAlarm",
-  "description": "Personal voice alarms that call you by name",
-  "start_url": "/",
+  "short_name": "Focus Alarm",
+  "description": "Personal alarm that calls you by name",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#f8fdff",
+  "background_color": "#e8f4f8",
   "theme_color": "#4682b4",
   "icons": [
     {
-      "src": "https://cdn.jsdelivr.net/npm/twemoji@14.0.2/assets/svg/1f4a1.svg",
+      "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/23f0.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple/img/apple/64/23f0.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
