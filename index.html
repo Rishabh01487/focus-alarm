@@ -846,7 +846,7 @@
         <div class="footer">
             <p>Personal Focus Alarm © 2024 | Beeps precisely on time</p>
             <p style="margin-top: 10px; font-size: 0.85rem;">
-                <span id="pwaStatus">High-precision timing with Web Audio API</span>
+                <span id="pwaStatus">Works best when app is open in browser tab</span>
             </p>
         </div>
     </div>
@@ -871,8 +871,6 @@
         let userName = 'Alex';
         let isVoicePlaying = false;
         let alarmAudioContext = null;
-        let alarmOscillator = null;
-        let continuousBeepInterval = null;
         
         // Voice messages templates
         const voiceMessages = {
@@ -954,6 +952,14 @@
             
             // Initialize audio context
             initAudioContext();
+            
+            // Listen for app visibility changes
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    // App became visible - check for missed alarms
+                    checkMissedAlarms();
+                }
+            });
         }
         
         function initAudioContext() {
@@ -1068,6 +1074,26 @@
             updateAlarmStatus(ringingCount);
             if (ringingCount > 0) {
                 renderGoals();
+            }
+        }
+        
+        function checkMissedAlarms() {
+            const now = new Date();
+            const missedAlarms = goals.filter(goal => {
+                if (goal.status === 'pending') {
+                    const goalDateTime = new Date(goal.date + 'T' + goal.startTime);
+                    return now >= goalDateTime && !activeAlarms.has(goal.id);
+                }
+                return false;
+            });
+            
+            if (missedAlarms.length > 0) {
+                missedAlarms.forEach(goal => {
+                    showNotification("Missed Alarm!", 
+                        `"${goal.title}" was scheduled for ${goal.startTime}\n` +
+                        `Starting alarm now!`);
+                    startContinuousAlarm(goal);
+                });
             }
         }
         
@@ -1384,9 +1410,10 @@
                 }
                 
                 // Stop any audio
-                if (alarmOscillator) {
-                    alarmOscillator.stop();
-                    alarmOscillator = null;
+                if (alarmAudioContext && alarmAudioContext.state !== 'closed') {
+                    alarmAudioContext.close();
+                    alarmAudioContext = null;
+                    initAudioContext(); // Reinitialize for next alarm
                 }
                 
                 const goal = goals.find(g => g.id === goalId);
@@ -1433,10 +1460,10 @@
                 window.speechSynthesis.cancel();
             }
             
-            // Stop any audio
-            if (alarmOscillator) {
-                alarmOscillator.stop();
-                alarmOscillator = null;
+            // Stop audio context
+            if (alarmAudioContext && alarmAudioContext.state !== 'closed') {
+                alarmAudioContext.close();
+                alarmAudioContext = null;
             }
             
             // Reset UI
@@ -1868,6 +1895,19 @@
             const saved = JSON.parse(localStorage.getItem('personalAlarms'));
             if (saved) {
                 goals = saved;
+                
+                // Check if any alarms should be ringing
+                const now = new Date();
+                goals.forEach(goal => {
+                    if (goal.status === 'pending') {
+                        const goalDateTime = new Date(goal.date + 'T' + goal.startTime);
+                        if (now >= goalDateTime) {
+                            goal.status = 'overdue';
+                            goal.isRinging = false;
+                        }
+                    }
+                });
+                saveGoals();
             }
         }
         
